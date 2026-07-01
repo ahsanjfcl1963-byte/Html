@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNCT_1360</title>
+<style>
+  :root{
+    --bg1:#05010f;
+    --bg2:#0c0420;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    height:100%;
+    width:100%;
+    overflow:hidden;
+    background: radial-gradient(ellipse at center, var(--bg2) 0%, var(--bg1) 70%);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+  }
+  canvas#field{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    z-index:1;
+  }
+  .stage{
+    position:relative;
+    z-index:2;
+    height:100vh;
+    width:100vw;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+  }
+  .ring{
+    position:absolute;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.06);
+    animation: spin linear infinite;
+  }
+  .ring1{width:340px;height:340px;animation-duration:22s;border-color:rgba(255, 80, 200, 0.15);}
+  .ring2{width:460px;height:460px;animation-duration:34s;animation-direction:reverse;border-color:rgba(80,180,255,0.13);}
+  .ring3{width:600px;height:600px;animation-duration:48s;border-color:rgba(150,255,180,0.10);}
+  @keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+  }
+  @media (max-width:600px){
+    .ring1{width:200px;height:200px;}
+    .ring2{width:280px;height:280px;}
+    .ring3{width:360px;height:360px;}
+  }
+
+  .logo-wrap{
+    position:relative;
+    padding:10px 20px;
+    text-align:center;
+  }
+
+  h1.logo{
+    font-family: 'Arial Black', 'Segoe UI', sans-serif;
+    font-weight:900;
+    font-size:clamp(2.4rem, 9vw, 6.2rem);
+    letter-spacing:2px;
+    background: linear-gradient(90deg,
+      #ff3cac 0%,
+      #784ba0 20%,
+      #2b86c5 40%,
+      #21d19f 60%,
+      #f9d423 80%,
+      #ff3cac 100%
+    );
+    background-size:400% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation: gradientMove 6s linear infinite;
+    text-shadow: 0 0 60px rgba(255,255,255,0.08);
+    filter: drop-shadow(0 0 18px rgba(255,60,172,0.35));
+    user-select:none;
+  }
+
+  @keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    100%{background-position:400% 50%;}
+  }
+
+  .subtitle{
+    margin-top:18px;
+    color:rgba(255,255,255,0.55);
+    font-size:0.95rem;
+    letter-spacing:6px;
+    text-transform:uppercase;
+    font-weight:300;
+    animation: fadeIn 2s ease forwards;
+    opacity:0;
+  }
+
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .glow-dot{
+    position:absolute;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 12px 4px rgba(255,255,255,0.6);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  .glow-dot:nth-child(1){top:-10px; left:20%; animation-delay:0s;}
+  .glow-dot:nth-child(2){bottom:-14px; right:15%; animation-delay:1s; background:#ff3cac; box-shadow:0 0 12px 4px rgba(255,60,172,0.6);}
+  .glow-dot:nth-child(3){top:40%; left:-30px; animation-delay:2s; background:#21d19f; box-shadow:0 0 12px 4px rgba(33,209,159,0.6);}
+
+  @keyframes pulse{
+    0%,100%{opacity:0.3; transform:scale(1);}
+    50%{opacity:1; transform:scale(1.6);}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="field"></canvas>
+
+<div class="stage">
+  <div class="ring ring1"></div>
+  <div class="ring ring2"></div>
+  <div class="ring ring3"></div>
+
+  <div class="logo-wrap">
+    <span class="glow-dot"></span>
+    <span class="glow-dot"></span>
+    <span class="glow-dot"></span>
+    <h1 class="logo">BNCT_1360</h1>
+    <div class="subtitle">welcome</div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('field');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const colors = ['#ff3cac','#784ba0','#2b86c5','#21d19f','#f9d423'];
+
+  function makeParticles(){
+    const count = Math.min(90, Math.floor((w*h)/16000));
+    particles = Array.from({length:count}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      r: Math.random()*1.6 + 0.4,
+      vx: (Math.random()-0.5)*0.25,
+      vy: (Math.random()-0.5)*0.25,
+      c: colors[Math.floor(Math.random()*colors.length)],
+      a: Math.random()*0.5+0.2
+    }));
+  }
+  makeParticles();
+  window.addEventListener('resize', makeParticles);
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      p.x += p.vx;
+      p.y += p.vy;
+      if(p.x<0) p.x=w; if(p.x>w) p.x=0;
+      if(p.y<0) p.y=h; if(p.y>h) p.y=0;
+
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle = p.c;
+      ctx.globalAlpha = p.a;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+
+</body>
+</html>
